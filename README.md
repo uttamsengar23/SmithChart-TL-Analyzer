@@ -1,8 +1,13 @@
-# **DOCUMENTATION**
+#  **DOCUMENTATION **
 
 ## **Smith Chart Based Transmission Line Analyzer (MATLAB App)**
 
-#  **1. Introduction**
+This documentation provides a **high‑quality, GitHub‑friendly and academically strong explanation** of all the RF, mathematical, and software concepts used in your MATLAB Smith Chart Transmission Line Analyzer App.
+All formulas are written in **pure Markdown**, so they render correctly on GitHub without LaTeX support.
+
+---
+
+# **1. Introduction**
 
 This MATLAB App Designer project is an **interactive visualization tool** designed to help users understand the behavior of **high‑frequency transmission lines**. It implements the following key RF computations:
 
@@ -228,7 +233,7 @@ with:
 |Gamma| ≤ 1
 ```
 
-ThE app uses a **Gamma‑plane representation**, drawing:
+The app uses a **Gamma‑plane representation**, drawing:
 
 * Unit circle (dotted)
 * SWR circle (dashed red)
@@ -259,7 +264,7 @@ This approach is mathematically valid and visually intuitive.
 
 #  **11. MATLAB GUI Architecture**
 
-The App Designer GUI consists of:
+Your App Designer GUI consists of:
 
 ###  **Input Components**
 
@@ -290,7 +295,7 @@ This ensures full control of the visualization.
 
 ---
 
-#  **12. Why This Project Stands Out**
+# **12. Why This Project Stands Out**
 
 * Complete RF theory implementation
 * True impedance transformation demonstration
@@ -301,7 +306,159 @@ This ensures full control of the visualization.
 
 ---
 
-#  End of Documentation
+#  **13. Example Input & Visual Explanation**
+
+This section demonstrates how the app processes real input values using the example below.
+
+**User Inputs:**
+
+```
+Z0 = 50 ohms
+ZL = 3 + 4i ohms
+Line Length (beta*l) = 0 radians
+```
+
+---
+
+##  **Step-by-Step Explanation of the Output**
+
+### **1️⃣ Load Reflection Coefficient (Gamma_L)**
+
+Using:
+
+```
+Gamma_L = (ZL - Z0) / (ZL + Z0)
+```
+
+Substitute values:
+
+```
+ZL = 3 + 4j
+Z0 = 50
+```
+
+Compute numerator:
+
+```
+ZL - Z0 = (3 + 4j) - 50 = -47 + 4j
+```
+
+Compute denominator:
+
+```
+ZL + Z0 = (3 + 4j) + 50 = 53 + 4j
+```
+
+Compute Gamma:
+
+```
+Gamma_L = (-47 + 4j) / (53 + 4j)
+```
+
+Magnitude:
+
+```
+|Gamma_L| ≈ 0.887
+```
+
+Angle (deg):
+
+```
+∠Gamma ≈ 12.9°
+```
+
+The app displays this as:
+
+```
+Gamma: 0.887 < 12.9°
+```
+
+---
+
+### **2️⃣ Standing Wave Ratio (SWR)**
+
+```
+SWR = (1 + |Gamma|) / (1 - |Gamma|)
+```
+
+Substitute:
+
+```
+SWR = (1 + 0.887) / (1 - 0.887)
+     = 1.887 / 0.113
+     ≈ 16.77
+```
+
+Displayed as:
+
+```
+SWR: 16.774
+```
+
+---
+
+### **3️⃣ Input Impedance (Z_in)**
+
+Because beta*l = 0 radians:
+
+```
+Zin = ZL    (no transformation)
+```
+
+So:
+
+```
+Zin = 3 + 4j ohms
+```
+
+Displayed as:
+
+```
+Z_in (Ohms): 3.00 + j(4.00)
+```
+
+---
+
+### **4️⃣ Smith Chart Interpretation**
+
+With the inputs:
+
+* **Gamma_L** is plotted at a magnitude of ~0.887 → very close to edge.
+* SWR circle radius ≈ **0.887** is drawn (red dashed).
+* Input Gamma equals Load Gamma (because line length = 0).
+* Blue (input) and red (load) points overlap.
+
+This matches the displayed chart in the image.
+
+---
+
+#  **14. Example Demonstration (with Image)**
+
+Below is the captured output of the app for:
+
+```
+Z0 = 50 ohms
+ZL = 3 + 4i ohms
+beta*l = 0
+```
+
+![Example Result](<img width="1112" height="1120" alt="image" src="https://github.com/user-attachments/assets/fbbec127-14dc-4c68-828b-0cb5f6362c30" />)
+
+**Explanation of the Visualization:**
+
+* The **white dotted circle** shows |Gamma| = 1.
+* The **red dashed circle** is the SWR circle for |Gamma| = 0.887.
+* The **red star** marks the load reflection coefficient (Gamma_L).
+* The **blue circle** marks the input reflection coefficient (Gamma_in).
+  Since the line length is zero, both points overlap.
+
+This example clearly demonstrates how the app processes RF inputs and plots the reflection behavior on a Smith Chart.
+
+---
+
+# End of Documentation
+
+
 
 
 
