@@ -1,4 +1,4 @@
-#  **DOCUMENTATION **
+#  **DOCUMENTATION**
 
 ## **Smith Chart Based Transmission Line Analyzer (MATLAB App)**
 
@@ -442,7 +442,7 @@ ZL = 3 + 4i ohms
 beta*l = 0
 ```
 
-![Example Result](<img width="1112" height="1120" alt="image" src="https://github.com/user-attachments/assets/fbbec127-14dc-4c68-828b-0cb5f6362c30" />)
+![Example Result](https://raw.githubusercontent.com/uttamsengar23/SmithChart-TL-Analyzer/refs/heads/main/SmithChartdemo.png)
 
 **Explanation of the Visualization:**
 
