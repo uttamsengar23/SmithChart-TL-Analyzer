@@ -2,11 +2,6 @@
 
 ## **Smith Chart Based Transmission Line Analyzer (MATLAB App)**
 
-This documentation provides a **high‑quality, GitHub‑friendly and academically strong explanation** of all the RF, mathematical, and software concepts used in your MATLAB Smith Chart Transmission Line Analyzer App.
-All formulas are written in **pure Markdown**, so they render correctly on GitHub without LaTeX support.
-
----
-
 # **1. Introduction**
 
 This MATLAB App Designer project is an **interactive visualization tool** designed to help users understand the behavior of **high‑frequency transmission lines**. It implements the following key RF computations:
