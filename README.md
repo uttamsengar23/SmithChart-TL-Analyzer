@@ -282,8 +282,8 @@ These values align with high mismatch (Γ close to 1) and strong capacitive susc
 # **15. Smith Chart Illustration and Explanation**
 
 The figure below shows the full impedance–admittance visualization produced for the example:
+![Smith Chart Illustration](https://raw.githubusercontent.com/uttamsengar23/SmithChart-TL-Analyzer/refs/heads/main/smitchartnew.png)
 
-*(Your screenshot is placed here)*
 
 ### **Explanation:**
 
