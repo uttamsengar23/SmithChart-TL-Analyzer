@@ -1,72 +1,63 @@
+
 #  **DOCUMENTATION**
 
-## **Smith Chart Based Transmission Line Analyzer (MATLAB App)**
+# **Smith Chart Based Transmission Line Analyzer (MATLAB App)**
 
 # **1. Introduction**
 
-This MATLAB App Designer project is an **interactive visualization tool** designed to help users understand the behavior of **high‑frequency transmission lines**. It implements the following key RF computations:
+This MATLAB App Designer project provides an interactive environment for analyzing the behavior of high-frequency transmission lines. It performs essential RF computations, visualizes impedance and admittance transformations, and plots both domains on a custom-rendered Smith Chart.
 
-* Reflection Coefficient at Load (Gamma_L)
-* Input Reflection Coefficient (Gamma_in)
+The tool is built to support:
+
+* Reflection Coefficient at Load (Γₗ)
+* Input Reflection Coefficient (Γᵢₙ)
 * Standing Wave Ratio (SWR)
-* Input Impedance (Z_in)
-* Impedance transformation using electrical length (beta*l)
+* Input Impedance (Zᵢₙ)
+* Load Admittance (Yₗ)
+* Input Admittance (Yᵢₙ)
+* Transmission line transformation using electrical length (βl)
 
-The app includes a **custom‑drawn Smith Chart** that displays:
+The Smith Chart visualization includes:
 
-* Unit Circle (|Gamma| = 1)
-* SWR Circle (|Gamma_L|)
-* Load Reflection Point (red star)
-* Input Reflection Point (blue circle)
+* Unit Circle
+* SWR Circle
+* Impedance Points (Γₗ, Γᵢₙ)
+* Admittance Points (−Γₗ, −Γᵢₙ)
 
-Its purpose is to provide intuitive learning for:
-
-* RF Students
-* Microwave Engineers
-* Amateur Radio / Antenna Designers
-* Researchers working with transmission lines and matching networks
+This makes the app valuable for RF engineering students, microwave engineers, antenna designers, and researchers working with matching networks.
 
 ---
 
-#  **2. Fundamentals of Transmission Lines**
+# **2. Fundamentals of Transmission Lines**
 
-Transmission lines at RF cannot be modeled as simple wires. They behave as **distributed systems**, where voltage and current vary continuously along length.
+Transmission lines at RF frequencies behave as distributed networks, not simple wires. Their per-unit-length elements cause voltage and current to vary sinusoidally along their length.
 
-Transmission lines behave like:
+The primary distributed parameters are:
 
-* Distributed inductance (L)
-* Distributed capacitance (C)
-* Distributed resistance (R)
-* Distributed dielectric leakage (G)
+* R — Series resistance
+* L — Series inductance
+* G — Shunt conductance
+* C — Shunt capacitance
 
-This leads to wave propagation governed by the telegrapher’s equations.
+These parameters lead to the telegrapher’s equations, which describe wave propagation and impedance transformation.
 
 ---
 
-#  **3. Characteristic Impedance (Z0)**
+# **3. Characteristic Impedance (Z₀)**
 
-The characteristic impedance determines the V/I ratio of a forward‑traveling wave.
+The characteristic impedance is given by:
 
 ```
-Z0 = sqrt( (R + j·ω·L) / (G + j·ω·C) )
+Z0 = sqrt((R + jωL) / (G + jωC))
 ```
 
-Where:
-
-| Symbol | Meaning                                |
-| ------ | -------------------------------------- |
-| R      | Series resistance per unit length      |
-| L      | Inductance per unit length             |
-| G      | Dielectric conductance per unit length |
-| C      | Capacitance per unit length            |
-
-For low‑loss lines:
+For low-loss lines:
 
 ```
 Z0 ≈ sqrt(L / C)
 ```
 
-### Code tie‑in:
+In the app, Z₀ is entered through:
 
 ```matlab
 Z0 = app.Z0EditField.Value;
@@ -74,23 +65,23 @@ Z0 = app.Z0EditField.Value;
 
 ---
 
-#  **4. Load Impedance (ZL)**
+# **4. Load Impedance (ZL)**
 
-The load attached at the end of the line is:
+The user enters the load in complex form:
 
 ```
-ZL = RL + j·XL
+ZL = RL + jXL
 ```
 
-The app accepts complex input strings like:
+Examples:
 
 ```
 25+30i
 100 - j50
-(50 + j20)
+3+4*i
 ```
 
-MATLAB converts this text into a complex number:
+MATLAB conversion:
 
 ```matlab
 ZL = str2num(ZL_str);
@@ -98,63 +89,37 @@ ZL = str2num(ZL_str);
 
 ---
 
-#  **5. Reflection Coefficient (Gamma_L)**
+# **5. Reflection Coefficient at Load (Γₗ)**
 
-A mismatch (ZL ≠ Z0) causes reflections.
+Defined as:
 
 ```
 Gamma_L = (ZL - Z0) / (ZL + Z0)
 ```
 
-### Meaning:
-
-* |Gamma| → Strength of reflection
-* Angle(Gamma) → Phase shift of reflected wave
-* Gamma = 0 → Perfect match
-* |Gamma| = 1 → Total reflection (open/short)
-
-### Code:
-
-```matlab
-Gamma = (ZL - Z0) / (ZL + Z0);
-```
-
-The app displays:
-
-* Magnitude
-* Angle (degrees)
-* Position on Smith chart
+Its magnitude indicates mismatch strength, and its angle indicates phase.
 
 ---
 
-#  **6. Standing Wave Ratio (SWR)**
-
-SWR measures the severity of mismatch.
+# **6. Standing Wave Ratio (SWR)**
 
 ```
 SWR = (1 + |Gamma|) / (1 - |Gamma|)
 ```
 
-### Code:
-
-```matlab
-SWR = (1 + abs(Gamma)) / (1 - abs(Gamma));
-```
-
-The SWR circle is drawn with radius = |Gamma|.
+An SWR of 1 indicates perfect matching.
 
 ---
 
-#  **7. Electrical Length (beta·l)**
+# **7. Electrical Length (βl)**
 
-Instead of requiring frequency and physical length separately, the app takes **electrical angle directly in radians**.
+The app accepts electrical length directly:
 
 ```
-beta = 2π / λ
-beta·l = electrical phase shift
+beta*l
 ```
 
-User inputs:
+Examples:
 
 ```
 0.5
@@ -162,296 +127,191 @@ pi/4
 1.57
 ```
 
-### Code:
-
-```matlab
-beta_l = l;
-```
+This value represents the phase shift along the transmission line.
 
 ---
 
-#  **8. Input Impedance of a Transmission Line**
+# **8. Input Impedance (Zᵢₙ)**
 
-Impedance transforms as signals travel along a line:
-
-```
-Zin = Z0 * (ZL + j·Z0·tan(beta·l)) / (Z0 + j·ZL·tan(beta·l))
-```
-
-This equation is central to RF/microwave engineering.
-
-### Code:
-
-```matlab
-numerator = ZL + 1i*Z0*tan(beta_l);
-denominator = Z0 + 1i*ZL*tan(beta_l);
-Zin = Z0 * (numerator / denominator);
-```
-
-### GUI output example:
+Based on the transmission line input impedance formula:
 
 ```
-Z_in (Ohms): 45.00 + j(-22.50)
+Zin = Z0 * (ZL + jZ0 tan(βl)) / (Z0 + jZL tan(βl))
 ```
+
+This expresses how the line transforms the load.
 
 ---
 
-#  **9. Input Reflection Coefficient (Gamma_in)**
+# **9. Input Reflection Coefficient (Γᵢₙ)**
 
-Once Zin is known:
+Once Zᵢₙ is known:
 
 ```
 Gamma_in = (Zin - Z0) / (Zin + Z0)
 ```
 
-### Code:
-
-```matlab
-Gamma_in = (Zin - Z0) / (Zin + Z0);
-```
-
-Gamma_in is plotted as the **blue circle**.
+This point is plotted on the Smith Chart.
 
 ---
 
-#  **10. Smith Chart Theory (Gamma‑Plane Rendering)**
+# **10. Admittance Representation**
 
-The Smith chart plots:
-
-```
-Gamma = x + j·y
-```
-
-with:
+Admittance is the reciprocal of impedance:
 
 ```
-|Gamma| ≤ 1
+Y = 1 / Z
 ```
 
-The app uses a **Gamma‑plane representation**, drawing:
+Two admittances are computed:
 
-* Unit circle (dotted)
-* SWR circle (dashed red)
-* Load point (red star)
-* Input point (blue circle)
+* Load Admittance:
 
-### Unit circle code:
+  ```
+  Y_L = 1 / ZL
+  ```
 
-```matlab
-plot(ax, cos(theta), sin(theta), ':')
-```
+* Input Admittance:
 
-### Plotting Gamma_L:
+  ```
+  Y_in = 1 / Zin
+  ```
 
-```matlab
-plot(real(Gamma), imag(Gamma), 'r*')
-```
-
-### Plotting Gamma_in:
-
-```matlab
-plot(real(Gamma_in), imag(Gamma_in), 'bo')
-```
-
-This approach is mathematically valid and visually intuitive.
+Both values are displayed in Siemens (S).
+The imaginary part shows susceptance, identifying capacitive (−jB) or inductive (+jB) nature.
 
 ---
 
-#  **11. MATLAB GUI Architecture**
+# **11. Admittance Reflection Coefficient**
 
-Your App Designer GUI consists of:
+In the Smith Chart, admittance is handled using:
 
-###  **Input Components**
-
-* `NumericEditField` for Z0
-* `TextEditField` for ZL (complex)
-* `TextEditField` for beta·l
-
-###  **Output Labels**
-
-Dynamic updates:
-
-```matlab
-app.SWRLabel.Text = ...
-app.ZinLabel.Text = ...
-app.GammaLabel.Text = ...
+```
+Gamma_Y = -Gamma_Z
 ```
 
-###  **Axes Rendering**
+This produces a 180° rotation of the impedance point across the origin.
 
-The Smith chart is built from:
+Thus:
 
-* Line primitives
-* Parametric cosine–sine circles
-* Equal‑axis scaling
-* Legend overlays
+* Load Admittance Reflection Coefficient: −Γₗ
+* Input Admittance Reflection Coefficient: −Γᵢₙ
 
-This ensures full control of the visualization.
+These are plotted with green markers for clear distinction.
 
 ---
 
-# **12. Why This Project Stands Out**
+# **12. Smith Chart Rendering Approach**
 
-* Complete RF theory implementation
-* True impedance transformation demonstration
-* Custom Smith Chart rendering (no toolbox required)
-* Accurate mapping of theory → actual MATLAB code
-* Great for GitHub portfolio and academic submissions
-* Highly educational visual representation
+The chart uses the Γ-plane representation:
 
----
+* Unit Circle: |Γ| = 1
+* SWR Circle: |Γₗ|
+* Γₗ → red star
+* Γᵢₙ → blue circle
+* −Γₗ → green triangle
+* −Γᵢₙ → green circle
 
-#  **13. Example Input & Visual Explanation**
-
-This section demonstrates how the app processes real input values using the example below.
-
-**User Inputs:**
-
-```
-Z0 = 50 ohms
-ZL = 3 + 4i ohms
-Line Length (beta*l) = 0 radians
-```
+All circles and points are manually drawn using cosine–sine parametric curves and line primitives. Axis scaling is locked to maintain circular geometry.
 
 ---
 
-##  **Step-by-Step Explanation of the Output**
+# **13. GUI Components**
 
-### **1️⃣ Load Reflection Coefficient (Gamma_L)**
+### **Inputs**
 
-Using:
+* Z₀ (Ohms)
+* ZL (complex)
+* Line Length (βl)
 
-```
-Gamma_L = (ZL - Z0) / (ZL + Z0)
-```
+### **Outputs**
 
-Substitute values:
+* SWR
+* Gamma (magnitude and angle)
+* Z_in
+* Input Admittance (Yᵢₙ)
+* Load Admittance (Yₗ)
 
-```
-ZL = 3 + 4j
-Z0 = 50
-```
+### **Visualization**
 
-Compute numerator:
-
-```
-ZL - Z0 = (3 + 4j) - 50 = -47 + 4j
-```
-
-Compute denominator:
-
-```
-ZL + Z0 = (3 + 4j) + 50 = 53 + 4j
-```
-
-Compute Gamma:
-
-```
-Gamma_L = (-47 + 4j) / (53 + 4j)
-```
-
-Magnitude:
-
-```
-|Gamma_L| ≈ 0.887
-```
-
-Angle (deg):
-
-```
-∠Gamma ≈ 12.9°
-```
-
-The app displays this as:
-
-```
-Gamma: 0.887 < 12.9°
-```
+A full Smith Chart showing both impedance and admittance domains simultaneously.
 
 ---
 
-### **2️⃣ Standing Wave Ratio (SWR)**
+# **14. Example Analysis and Interpretation**
+
+Using the inputs:
 
 ```
-SWR = (1 + |Gamma|) / (1 - |Gamma|)
+Z0 = 50 Ω
+ZL = 3 + 4i Ω
+βl = 0 rad
 ```
 
-Substitute:
+The app computes:
+
+### **Reflection Coefficient**
 
 ```
-SWR = (1 + 0.887) / (1 - 0.887)
-     = 1.887 / 0.113
-     ≈ 16.77
+Γ_L = 0.887 ∠ 170.82°
 ```
 
-Displayed as:
+### **SWR**
 
 ```
-SWR: 16.774
+SWR = 16.774
 ```
+
+### **Input Impedance**
+
+```
+Z_in = 3 + j4 Ω
+```
+
+### **Load and Input Admittance**
+
+```
+Y_L = 0.1200 – j0.1600 S
+Y_in = 0.1200 – j0.1600 S
+```
+
+These values align with high mismatch (Γ close to 1) and strong capacitive susceptance (negative imaginary part).
 
 ---
 
-### **3️⃣ Input Impedance (Z_in)**
+# **15. Smith Chart Illustration and Explanation**
 
-Because beta*l = 0 radians:
+The figure below shows the full impedance–admittance visualization produced for the example:
 
-```
-Zin = ZL    (no transformation)
-```
+*(Your screenshot is placed here)*
 
-So:
+### **Explanation:**
 
-```
-Zin = 3 + 4j ohms
-```
+1. **White Dotted Circle**
+   Represents |Γ| = 1, the fundamental Smith Chart boundary.
 
-Displayed as:
+2. **Red Dashed Circle**
+   SWR circle corresponding to |Γₗ| = 0.887.
 
-```
-Z_in (Ohms): 3.00 + j(4.00)
-```
+3. **Red Star (Γₗ)**
+   Load reflection coefficient located near the boundary, indicating heavy mismatch.
 
----
+4. **Blue Circle (Γᵢₙ)**
+   For βl = 0, Γᵢₙ overlaps exactly with Γₗ.
 
-### **4️⃣ Smith Chart Interpretation**
+5. **Green Triangle (−Γₗ)**
+   Admittance reflection coefficient of the load.
 
-With the inputs:
+6. **Green Circle (−Γᵢₙ)**
+   Input admittance reflection coefficient.
 
-* **Gamma_L** is plotted at a magnitude of ~0.887 → very close to edge.
-* SWR circle radius ≈ **0.887** is drawn (red dashed).
-* Input Gamma equals Load Gamma (because line length = 0).
-* Blue (input) and red (load) points overlap.
+7. **Grid, Axes, Legend**
+   Improve readability and clarity of the Γ-plane.
 
-This matches the displayed chart in the image.
+This dual representation provides clear insight into both impedance and admittance behavior of the line.
 
 ---
 
-#  **14. Example Demonstration (with Image)**
-
-Below is the captured output of the app for:
-
-```
-Z0 = 50 ohms
-ZL = 3 + 4i ohms
-beta*l = 0
-```
-
-![Example Result](https://raw.githubusercontent.com/uttamsengar23/SmithChart-TL-Analyzer/refs/heads/main/SmithChartdemo.png)
-
-**Explanation of the Visualization:**
-
-* The **white dotted circle** shows |Gamma| = 1.
-* The **red dashed circle** is the SWR circle for |Gamma| = 0.887.
-* The **red star** marks the load reflection coefficient (Gamma_L).
-* The **blue circle** marks the input reflection coefficient (Gamma_in).
-  Since the line length is zero, both points overlap.
-
-This example clearly demonstrates how the app processes RF inputs and plots the reflection behavior on a Smith Chart.
-
----
-
-# End of Documentation
 
 
 
